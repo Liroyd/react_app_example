@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
+import Board from './components/Board/board';
 import './react_app_example.css';
 
 class ReactAppExample extends Component {
     render() {
         return (
-            <p><b>There will be app</b></p>
+            <div className="game">
+                <div className="game-board">
+                    <Board />
+                </div>
+                <div className="game-info">
+                    <div>{/* status */}</div>
+                    <div>{/* TODO */}</div>
+                </div>
+            </div>
         );
     }
 }
