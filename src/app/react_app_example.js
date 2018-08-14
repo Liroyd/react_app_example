@@ -10,7 +10,8 @@ class ReactAppExample extends Component {
             history: [{
                 squares: Array(9).fill(null)
             }],
-            isXnext: true
+            stepNumber: 0,
+            xIsNext: true
         };
     }
 
@@ -36,30 +37,48 @@ class ReactAppExample extends Component {
     }
 
     handleClick(i) {
-        const history = this.state.history;
+        const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const currentSquare = current.squares.slice();
         if (this.calculateWinner(currentSquare) || currentSquare[i]) {
             return;
         }
-        currentSquare[i] = this.state.isXnext ? 'X' : 'O';
+        currentSquare[i] = this.state.xIsNext ? 'X' : 'O';
         this.setState({
             history: history.concat([{
                 squares: currentSquare}]),
-            isXnext: !this.state.isXnext,});
+            stepNumber: history.length,
+            xIsNext: !this.state.xIsNext,});
+    }
+
+    jumpTo(moveNumber){
+        this.setState({
+            stepNumber: moveNumber,
+            xIsNext: (moveNumber % 2) === 0
+        });
     }
 
     render() {
         let status;
         const history = this.state.history;
-        const current = history[history.length - 1];
+        const current = history[this.state.stepNumber];
         const currentSquare = current.squares;
         const winner = this.calculateWinner(currentSquare);
         if (winner) {
             status = "Winner is " + winner;
         } else {
-            status = 'Next player: '+ (this.state.isXnext ? "X" : "O");
+            status = 'Next player: '+ (this.state.xIsNext ? "X" : "O");
         }
+        const moves = history.map((squares, moveNumber) => {
+            const desc = moveNumber ?
+                'Go to move#' + moveNumber :
+                'Go to start';
+            return (
+                <li key = {moveNumber}>
+                    <button onClick = {() => this.jumpTo(moveNumber)}>{desc}</button>
+                </li>
+            );
+        });
 
         return (
             <div className="game">
@@ -71,7 +90,7 @@ class ReactAppExample extends Component {
                 </div>
                 <div className="game-info">
                     <div className="status">{status}</div>
-                    <div>{/* TODO */}</div>
+                    <ol>{moves}</ol>
                 </div>
             </div>
         );
